@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Trip {
+  id             String   @id @default(cuid())
+  name           String
+  destination    String
+  year           Int
+  currency       String   @default("EUR")
+  type           String   // FLIGHT or ROAD
+  dateRangeStart DateTime?
+  dateRangeEnd   DateTime?
+  isCandidate    Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  participants    Participant[]
+  flightOptions   FlightOption[]
+  transportItems  TransportItem[]
+  lodgingStays    LodgingStay[]
+  itineraryItems  ItineraryItem[]
+  splits          Split[]
+}
+
+model Participant {
+  id     String @id @default(cuid())
+  tripId String
+  name   String
+
+  trip               Trip               @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  splitsPaidBy       Split[]            @relation("PaidBy")
+  splitParticipants  SplitParticipant[]
+  splitAllocations   SplitAllocation[]
+}
+
+model FlightOption {
+  id             String    @id @default(cuid())
+  tripId         String
+  route          String
+  departDate     DateTime
+  returnDate     DateTime
+  amount         Float
+  comments       String?
+  baggageInfo    String?
+  perPersonNotes String?
+  link           String?
+  isSelected     Boolean   @default(false)
+
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+}
+
+model TransportItem {
+  id         String  @id @default(cuid())
+  tripId     String
+  label      String
+  amount     Float
+  link       String?
+  notes      String?
+  isSelected Boolean @default(false)
+
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+}
+
+model LodgingStay {
+  id        String   @id @default(cuid())
+  tripId    String
+  city      String
+  hotelName String
+  link      String?
+  checkIn   DateTime
+  checkOut  DateTime
+  amount    Float
+  notes     String?
+
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+}
+
+model ItineraryItem {
+  id                String   @id @default(cuid())
+  tripId            String
+  dayIndex          Int
+  date              DateTime?
+  from              String
+  to                String
+  km                Int?
+  durationMinutes   Int?
+  sleepOvernight    Boolean  @default(false)
+  comments          String?
+  pointsOfInterest  String?
+  link              String?
+
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+}
+
+model Split {
+  id              String @id @default(cuid())
+  tripId          String
+  expenseRefType  String // FLIGHT_OPTION, TRANSPORT_ITEM, LODGING_STAY
+  expenseRefId    String
+  paidByParticipantId String
+  splitMode       String // EQUAL or CUSTOM
+
+  trip                Trip               @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  paidBy              Participant        @relation("PaidBy", fields: [paidByParticipantId], references: [id], onDelete: Cascade)
+  splitParticipants   SplitParticipant[]
+  splitAllocations    SplitAllocation[]
+
+  @@unique([expenseRefType, expenseRefId])
+}
+
+model SplitParticipant {
+  splitId       String
+  participantId String
+
+  split       Split       @relation(fields: [splitId], references: [id], onDelete: Cascade)
+  participant Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@id([splitId, participantId])
+}
+
+model SplitAllocation {
+  splitId       String
+  participantId String
+  amount        Float
+
+  split       Split       @relation(fields: [splitId], references: [id], onDelete: Cascade)
+  participant Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@id([splitId, participantId])
+}
