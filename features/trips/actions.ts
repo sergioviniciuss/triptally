@@ -55,6 +55,10 @@ export async function createTrip(data: unknown) {
     revalidatePath('/trips')
     return { success: true, data: trip }
   } catch (error) {
+    console.error('Error creating trip:', error)
+    if (error instanceof Error) {
+      return { success: false, error: error.message }
+    }
     return { success: false, error: 'Failed to create trip' }
   }
 }

@@ -6,8 +6,8 @@ export const tripSchema = z.object({
   year: z.number().int().min(2000).max(2100),
   currency: z.string().length(3).default('EUR'),
   type: z.enum(['FLIGHT', 'ROAD']),
-  dateRangeStart: z.string().optional(),
-  dateRangeEnd: z.string().optional(),
+  dateRangeStart: z.string().optional().transform(val => val ? new Date(val) : undefined),
+  dateRangeEnd: z.string().optional().transform(val => val ? new Date(val) : undefined),
   isCandidate: z.boolean().default(false),
 })
 
@@ -17,8 +17,8 @@ export const participantSchema = z.object({
 
 export const flightOptionSchema = z.object({
   route: z.string().min(1, 'Route is required'),
-  departDate: z.string(),
-  returnDate: z.string(),
+  departDate: z.string().transform(val => new Date(val)),
+  returnDate: z.string().transform(val => new Date(val)),
   amount: z.number().min(0),
   comments: z.string().optional(),
   baggageInfo: z.string().optional(),
@@ -39,15 +39,15 @@ export const lodgingStaySchema = z.object({
   city: z.string().min(1, 'City is required'),
   hotelName: z.string().min(1, 'Hotel name is required'),
   link: z.string().optional(),
-  checkIn: z.string(),
-  checkOut: z.string(),
+  checkIn: z.string().transform(val => new Date(val)),
+  checkOut: z.string().transform(val => new Date(val)),
   amount: z.number().min(0),
   notes: z.string().optional(),
 })
 
 export const itineraryItemSchema = z.object({
   dayIndex: z.number().int().min(1),
-  date: z.string().optional(),
+  date: z.string().optional().transform(val => val ? new Date(val) : undefined),
   from: z.string().min(1, 'From is required'),
   to: z.string().min(1, 'To is required'),
   km: z.number().int().min(0).optional(),
