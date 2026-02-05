@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react'
 import Modal from '@/components/ui/Modal'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
+import CurrencyInput from '@/components/ui/CurrencyInput'
 import { createOrUpdateSplit, getSplit } from './actions'
+import { parseCurrency } from '@/lib/currency'
 import { toast } from 'sonner'
 
 interface Participant {
@@ -36,7 +38,7 @@ export default function SplitModal({
   const [paidBy, setPaidBy] = useState('')
   const [splitMode, setSplitMode] = useState<'EQUAL' | 'CUSTOM'>('EQUAL')
   const [selectedParticipants, setSelectedParticipants] = useState<string[]>([])
-  const [customAmounts, setCustomAmounts] = useState<Record<string, number>>({})
+  const [customAmounts, setCustomAmounts] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -53,9 +55,9 @@ export default function SplitModal({
       setSelectedParticipants(result.data.splitParticipants.map((sp) => sp.participantId))
 
       if (result.data.splitMode === 'CUSTOM') {
-        const amounts: Record<string, number> = {}
+        const amounts: Record<string, string> = {}
         result.data.splitAllocations.forEach((a) => {
-          amounts[a.participantId] = a.amount
+          amounts[a.participantId] = a.amount.toString()
         })
         setCustomAmounts(amounts)
       }
@@ -75,7 +77,7 @@ export default function SplitModal({
     }
 
     if (splitMode === 'CUSTOM') {
-      const total = selectedParticipants.reduce((sum, pid) => sum + (customAmounts[pid] || 0), 0)
+      const total = selectedParticipants.reduce((sum, pid) => sum + parseCurrency(customAmounts[pid] || '0'), 0)
       if (Math.abs(total - expenseAmount) > 0.01) {
         toast.error(`Custom amounts must sum to ${expenseAmount}`)
         return
@@ -93,7 +95,7 @@ export default function SplitModal({
         splitMode === 'CUSTOM'
           ? selectedParticipants.map((pid) => ({
               participantId: pid,
-              amount: customAmounts[pid] || 0,
+              amount: parseCurrency(customAmounts[pid] || '0'),
             }))
           : undefined,
     })
@@ -189,14 +191,12 @@ export default function SplitModal({
             {selectedParticipants.map((pid) => {
               const participant = participants.find((p) => p.id === pid)
               return (
-                <Input
+                <CurrencyInput
                   key={pid}
-                  type="number"
-                  step="0.01"
                   label={participant?.name}
-                  value={customAmounts[pid] || 0}
-                  onChange={(e) =>
-                    setCustomAmounts({ ...customAmounts, [pid]: parseFloat(e.target.value) || 0 })
+                  value={customAmounts[pid] || ''}
+                  onChange={(value) =>
+                    setCustomAmounts({ ...customAmounts, [pid]: value })
                   }
                 />
               )
@@ -204,7 +204,7 @@ export default function SplitModal({
             <p className="text-sm text-gray-600">
               Total:{' '}
               <span className="font-medium">
-                {selectedParticipants.reduce((sum, pid) => sum + (customAmounts[pid] || 0), 0).toFixed(2)}
+                {selectedParticipants.reduce((sum, pid) => sum + parseCurrency(customAmounts[pid] || '0'), 0).toFixed(2)}
               </span>{' '}
               / {expenseAmount.toFixed(2)}
             </p>

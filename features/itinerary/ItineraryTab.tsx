@@ -36,8 +36,8 @@ export default function ItineraryTab({
     date: '',
     from: '',
     to: '',
-    km: 0,
-    durationMinutes: 0,
+    km: '',
+    durationMinutes: '',
     sleepOvernight: false,
     comments: '',
     pointsOfInterest: '',
@@ -50,7 +50,11 @@ export default function ItineraryTab({
       return
     }
 
-    const result = await createItineraryItem(tripId, formData)
+    const result = await createItineraryItem(tripId, {
+      ...formData,
+      km: formData.km ? parseInt(formData.km as string) : undefined,
+      durationMinutes: formData.durationMinutes ? parseInt(formData.durationMinutes as string) : undefined,
+    })
     if (result.success) {
       toast.success('Day added')
       setItems([...items, result.data])
@@ -59,8 +63,8 @@ export default function ItineraryTab({
         date: '',
         from: formData.to, // Next day starts from where this day ends
         to: '',
-        km: 0,
-        durationMinutes: 0,
+        km: '',
+        durationMinutes: '',
         sleepOvernight: false,
         comments: '',
         pointsOfInterest: '',
@@ -148,14 +152,16 @@ export default function ItineraryTab({
             <Input
               label="Distance (km)"
               type="number"
+              placeholder="0"
               value={formData.km}
-              onChange={(e) => setFormData({ ...formData, km: parseInt(e.target.value) || 0 })}
+              onChange={(e) => setFormData({ ...formData, km: e.target.value })}
             />
             <Input
               label="Duration (minutes)"
               type="number"
+              placeholder="0"
               value={formData.durationMinutes}
-              onChange={(e) => setFormData({ ...formData, durationMinutes: parseInt(e.target.value) || 0 })}
+              onChange={(e) => setFormData({ ...formData, durationMinutes: e.target.value })}
             />
             <div className="md:col-span-2">
               <label className="flex items-center gap-2">

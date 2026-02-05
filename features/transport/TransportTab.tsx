@@ -6,9 +6,11 @@ import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import EmptyState from '@/components/ui/EmptyState'
 import Input from '@/components/ui/Input'
+import CurrencyInput from '@/components/ui/CurrencyInput'
 import SplitModal from '@/features/splits/SplitModal'
 import { createTransportItem, updateTransportItem, deleteTransportItem, selectTransportItem } from './actions'
 import { formatCurrency } from '@/lib/utils'
+import { parseCurrency } from '@/lib/currency'
 import { toast } from 'sonner'
 
 interface TransportItem {
@@ -41,7 +43,7 @@ export default function TransportTab({
   const [isAdding, setIsAdding] = useState(false)
   const [splitModalOpen, setSplitModalOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<TransportItem | null>(null)
-  const [formData, setFormData] = useState({ label: '', amount: 0, link: '', notes: '' })
+  const [formData, setFormData] = useState({ label: '', amount: '', link: '', notes: '' })
 
   const handleAdd = async () => {
     if (!formData.label) {
@@ -49,11 +51,14 @@ export default function TransportTab({
       return
     }
 
-    const result = await createTransportItem(tripId, formData)
+    const result = await createTransportItem(tripId, {
+      ...formData,
+      amount: parseCurrency(formData.amount as string),
+    })
     if (result.success) {
       toast.success('Transport item added')
       setItems([...items, result.data])
-      setFormData({ label: '', amount: 0, link: '', notes: '' })
+      setFormData({ label: '', amount: '', link: '', notes: '' })
       setIsAdding(false)
     } else {
       toast.error(result.error || 'Failed to add item')
@@ -121,12 +126,12 @@ export default function TransportTab({
               value={formData.label}
               onChange={(e) => setFormData({ ...formData, label: e.target.value })}
             />
-            <Input
-              label="Amount *"
-              type="number"
-              step="0.01"
+            <CurrencyInput
+              label="Price *"
+              placeholder="0.00"
               value={formData.amount}
-              onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
+              onChange={(value) => setFormData({ ...formData, amount: value })}
+              currency={currency}
             />
             <Input
               label="Link"

@@ -6,10 +6,12 @@ import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import EmptyState from '@/components/ui/EmptyState'
 import Input from '@/components/ui/Input'
+import CurrencyInput from '@/components/ui/CurrencyInput'
 import SaveIndicator from '@/components/ui/SaveIndicator'
 import SplitModal from '@/features/splits/SplitModal'
 import { createFlightOption, updateFlightOption, deleteFlightOption, selectFlightOption } from './actions'
 import { formatCurrency, formatDate } from '@/lib/utils'
+import { parseCurrency } from '@/lib/currency'
 import { toast } from 'sonner'
 
 interface Flight {
@@ -51,7 +53,7 @@ export default function FlightsTab({
     route: '',
     departDate: '',
     returnDate: '',
-    amount: 0,
+    amount: '',
     comments: '',
     link: '',
   })
@@ -63,13 +65,16 @@ export default function FlightsTab({
     }
 
     setSaveStatus('saving')
-    const result = await createFlightOption(tripId, formData)
+    const result = await createFlightOption(tripId, {
+      ...formData,
+      amount: parseCurrency(formData.amount as string),
+    })
     
     if (result.success) {
       setSaveStatus('saved')
       toast.success('Flight added')
       setFlights([...flights, result.data])
-      setFormData({ route: '', departDate: '', returnDate: '', amount: 0, comments: '', link: '' })
+      setFormData({ route: '', departDate: '', returnDate: '', amount: '', comments: '', link: '' })
       setIsAdding(false)
       setTimeout(() => setSaveStatus('idle'), 2000)
     } else {
@@ -154,12 +159,12 @@ export default function FlightsTab({
               value={formData.route}
               onChange={(e) => setFormData({ ...formData, route: e.target.value })}
             />
-            <Input
-              label="Amount *"
-              type="number"
-              step="0.01"
+            <CurrencyInput
+              label="Price *"
+              placeholder="0.00"
               value={formData.amount}
-              onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
+              onChange={(value) => setFormData({ ...formData, amount: value })}
+              currency={currency}
             />
             <Input
               label="Departure *"
