@@ -91,6 +91,57 @@ The test suite ensures that:
 
 ---
 
+### 5. FlightsTab Component Tests (`features/flights/FlightsTab.test.tsx`)
+
+**Purpose:** Ensures date field constraints work correctly for departure/return dates.
+
+**Key Test Cases:**
+- ✅ **Date fields render**: Both departure and return date fields are present
+- ✅ **No min when empty**: Return date has no min attribute when departure is empty
+- ✅ **Min equals departure**: Return date min attribute equals departure date value
+- ✅ **Min updates dynamically**: Return date min updates when departure date changes
+- ✅ **Min clears**: Return date min attribute clears when departure is cleared
+
+**Bug Prevention:**
+- Prevents users from selecting return dates before departure dates
+- Improves UX by constraining date picker to valid ranges
+
+---
+
+### 6. LodgingTab Component Tests (`features/lodging/LodgingTab.test.tsx`)
+
+**Purpose:** Ensures date field constraints work correctly for check-in/check-out dates.
+
+**Key Test Cases:**
+- ✅ **Date fields render**: Both check-in and check-out date fields are present
+- ✅ **No min when empty**: Check-out date has no min attribute when check-in is empty
+- ✅ **Min equals check-in**: Check-out date min attribute equals check-in date value
+- ✅ **Min updates dynamically**: Check-out date min updates when check-in date changes
+- ✅ **Min clears**: Check-out date min attribute clears when check-in is cleared
+
+**Bug Prevention:**
+- Prevents users from selecting check-out dates before check-in dates
+- Improves UX by constraining date picker to valid ranges
+
+---
+
+### 7. Trip Form Component Tests (`app/trips/new/page.test.tsx`)
+
+**Purpose:** Ensures date field constraints work correctly for trip start/end dates.
+
+**Key Test Cases:**
+- ✅ **Date fields render**: Both start and end date fields are present
+- ✅ **No min when empty**: End date has no min attribute when start date is empty
+- ✅ **Min equals start**: End date min attribute equals start date value
+- ✅ **Min updates dynamically**: End date min updates when start date changes
+- ✅ **Min clears**: End date min attribute clears when start date is cleared
+
+**Bug Prevention:**
+- Prevents users from selecting end dates before start dates
+- Improves UX by constraining date picker to valid ranges
+
+---
+
 ## Running Tests
 
 ### Run All Tests
@@ -117,11 +168,14 @@ yarn test:watch
 
 | Feature | Test File | Tests | Status |
 |---------|-----------|-------|--------|
-| Flights | `features/flights/actions.test.ts` | 9 | ✅ Passing |
+| Flights Actions | `features/flights/actions.test.ts` | 9 | ✅ Passing |
+| Flights UI | `features/flights/FlightsTab.test.tsx` | 5 | ✅ Passing |
 | Transport | `features/transport/actions.test.ts` | 8 | ✅ Passing |
-| Lodging | `features/lodging/actions.test.ts` | 6 | ✅ Passing |
+| Lodging Actions | `features/lodging/actions.test.ts` | 6 | ✅ Passing |
+| Lodging UI | `features/lodging/LodgingTab.test.tsx` | 5 | ✅ Passing |
+| Trip Form | `app/trips/new/page.test.tsx` | 5 | ✅ Passing |
 | Totals | `lib/totals.test.ts` | 7 | ✅ Passing |
-| **Total** | **4 files** | **30** | ✅ **All Passing** |
+| **Total** | **7 files** | **45** | ✅ **All Passing** |
 
 ---
 

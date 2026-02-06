@@ -134,6 +134,7 @@ export default function LodgingTab({
               type="date"
               value={formData.checkOut}
               onChange={(e) => setFormData({ ...formData, checkOut: e.target.value })}
+              min={formData.checkIn}
             />
             <CurrencyInput
               label="Price *"

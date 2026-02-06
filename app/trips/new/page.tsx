@@ -134,6 +134,7 @@ export default function NewTripPage() {
                 type="date"
                 value={formData.dateRangeEnd}
                 onChange={(e) => setFormData({ ...formData, dateRangeEnd: e.target.value })}
+                min={formData.dateRangeStart}
               />
             </div>
 
