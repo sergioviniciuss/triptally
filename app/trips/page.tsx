@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Button from '@/components/ui/Button'
+import UserMenu from '@/components/ui/UserMenu'
 import TripsList from '@/features/trips/TripsList'
 import { listTrips } from '@/features/trips/actions'
 
@@ -18,9 +19,12 @@ export default async function TripsPage() {
               </svg>
               <h1 className="text-2xl font-bold text-gray-900">TripTally</h1>
             </div>
-            <Link href="/trips/new">
-              <Button>+ Create Trip</Button>
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link href="/trips/new">
+                <Button>+ Create Trip</Button>
+              </Link>
+              <UserMenu />
+            </div>
           </div>
         </div>
       </header>

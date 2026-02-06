@@ -8,16 +8,26 @@ export async function createFlightOption(tripId: string, data: unknown) {
   try {
     const validated = flightOptionSchema.parse(data)
 
+    // Check if there are any existing selected flights
+    const existingSelectedFlight = await prisma.flightOption.findFirst({
+      where: { tripId, isSelected: true },
+    })
+
+    // If no selected flight exists, auto-select this one
+    const isSelected = !existingSelectedFlight
+
     const flight = await prisma.flightOption.create({
       data: {
         tripId,
         ...validated,
+        isSelected,
       },
     })
 
     revalidatePath(`/trips/${tripId}`)
     return { success: true, data: flight }
   } catch (error) {
+    console.error('Failed to create flight option:', error)
     return { success: false, error: 'Failed to create flight option' }
   }
 }
@@ -35,6 +45,7 @@ export async function updateFlightOption(flightId: string, data: unknown) {
     revalidatePath(`/trips/${tripId}`)
     return { success: true, data: flight }
   } catch (error) {
+    console.error('Failed to update flight option:', error)
     return { success: false, error: 'Failed to update flight option' }
   }
 }
@@ -56,6 +67,7 @@ export async function deleteFlightOption(flightId: string) {
 
     return { success: true }
   } catch (error) {
+    console.error('Failed to delete flight option:', error)
     return { success: false, error: 'Failed to delete flight option' }
   }
 }
@@ -77,6 +89,7 @@ export async function selectFlightOption(tripId: string, flightId: string) {
     revalidatePath(`/trips/${tripId}`)
     return { success: true }
   } catch (error) {
+    console.error('Failed to select flight option:', error)
     return { success: false, error: 'Failed to select flight option' }
   }
 }

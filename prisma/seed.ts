@@ -1,13 +1,29 @@
 import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
 async function main() {
   console.log('Seeding database...')
 
+  // Create a test user
+  const hashedPassword = await bcrypt.hash('Test123!', 12)
+  const user = await prisma.user.create({
+    data: {
+      name: 'Test User',
+      email: 'test@example.com',
+      password: hashedPassword,
+      emailVerified: new Date(),
+    },
+  })
+
+  console.log('Created test user:', user.email)
+  console.log('Password: Test123!')
+
   // Create a trip
   const trip = await prisma.trip.create({
     data: {
+      userId: user.id,
       name: 'Mallorca 2024',
       destination: 'Mallorca',
       year: 2024,

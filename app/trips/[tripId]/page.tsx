@@ -10,8 +10,6 @@ import LodgingTab from '@/features/lodging/LodgingTab'
 import ItineraryTab from '@/features/itinerary/ItineraryTab'
 import TotalTab from '@/features/total/TotalTab'
 import { getTrip } from '@/features/trips/actions'
-import { calculateTripTotals } from '@/lib/totals'
-import { prisma } from '@/lib/prisma'
 
 interface PageProps {
   params: Promise<{ tripId: string }>

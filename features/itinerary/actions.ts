@@ -18,6 +18,7 @@ export async function createItineraryItem(tripId: string, data: unknown) {
     revalidatePath(`/trips/${tripId}`)
     return { success: true, data: item }
   } catch (error) {
+    console.error('Failed to create itinerary item:', error)
     return { success: false, error: 'Failed to create itinerary item' }
   }
 }
@@ -35,6 +36,7 @@ export async function updateItineraryItem(itemId: string, data: unknown) {
     revalidatePath(`/trips/${tripId}`)
     return { success: true, data: item }
   } catch (error) {
+    console.error('Failed to update itinerary item:', error)
     return { success: false, error: 'Failed to update itinerary item' }
   }
 }
@@ -56,6 +58,7 @@ export async function deleteItineraryItem(itemId: string) {
 
     return { success: true }
   } catch (error) {
+    console.error('Failed to delete itinerary item:', error)
     return { success: false, error: 'Failed to delete itinerary item' }
   }
 }

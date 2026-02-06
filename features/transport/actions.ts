@@ -8,16 +8,26 @@ export async function createTransportItem(tripId: string, data: unknown) {
   try {
     const validated = transportItemSchema.parse(data)
 
+    // Check if there are any existing selected transport items
+    const existingSelectedItem = await prisma.transportItem.findFirst({
+      where: { tripId, isSelected: true },
+    })
+
+    // If no selected item exists, auto-select this one
+    const isSelected = !existingSelectedItem
+
     const item = await prisma.transportItem.create({
       data: {
         tripId,
         ...validated,
+        isSelected,
       },
     })
 
     revalidatePath(`/trips/${tripId}`)
     return { success: true, data: item }
   } catch (error) {
+    console.error('Failed to create transport item:', error)
     return { success: false, error: 'Failed to create transport item' }
   }
 }
@@ -35,6 +45,7 @@ export async function updateTransportItem(itemId: string, data: unknown) {
     revalidatePath(`/trips/${tripId}`)
     return { success: true, data: item }
   } catch (error) {
+    console.error('Failed to update transport item:', error)
     return { success: false, error: 'Failed to update transport item' }
   }
 }
@@ -56,6 +67,7 @@ export async function deleteTransportItem(itemId: string) {
 
     return { success: true }
   } catch (error) {
+    console.error('Failed to delete transport item:', error)
     return { success: false, error: 'Failed to delete transport item' }
   }
 }
@@ -77,6 +89,7 @@ export async function selectTransportItem(tripId: string, itemId: string) {
     revalidatePath(`/trips/${tripId}`)
     return { success: true }
   } catch (error) {
+    console.error('Failed to select transport item:', error)
     return { success: false, error: 'Failed to select transport item' }
   }
 }
