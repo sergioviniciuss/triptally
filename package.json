@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:actions": "jest features/**/actions.test.ts",
+    "test:totals": "jest lib/totals.test.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
