@@ -34,18 +34,39 @@ export default function LodgingTab({
   stays: initialStays,
   participants,
   currency,
+  tripStartDate,
+  tripEndDate,
 }: {
   tripId: string
   stays: LodgingStay[]
   participants: Participant[]
   currency: string
+  tripStartDate?: Date | null
+  tripEndDate?: Date | null
 }) {
   const router = useRouter()
   const [stays, setStays] = useState(initialStays)
   const [isAdding, setIsAdding] = useState(false)
   const [splitModalOpen, setSplitModalOpen] = useState(false)
   const [selectedStay, setSelectedStay] = useState<LodgingStay | null>(null)
-  const [formData, setFormData] = useState({ city: '', hotelName: '', link: '', checkIn: '', checkOut: '', amount: '', notes: '' })
+  
+  // Helper function to get initial dates
+  const getInitialDates = () => {
+    const checkIn = tripStartDate ? new Date(tripStartDate).toISOString().split('T')[0] : ''
+    const checkOut = tripEndDate ? new Date(tripEndDate).toISOString().split('T')[0] : ''
+    return { checkIn, checkOut }
+  }
+
+  const initialDates = getInitialDates()
+  const [formData, setFormData] = useState({ 
+    city: '', 
+    hotelName: '', 
+    link: '', 
+    checkIn: initialDates.checkIn, 
+    checkOut: initialDates.checkOut, 
+    amount: '', 
+    notes: '' 
+  })
 
   const handleAdd = async () => {
     if (!formData.city || !formData.hotelName || !formData.checkIn || !formData.checkOut) {
@@ -128,6 +149,8 @@ export default function LodgingTab({
               type="date"
               value={formData.checkIn}
               onChange={(e) => setFormData({ ...formData, checkIn: e.target.value })}
+              min={tripStartDate ? new Date(tripStartDate).toISOString().split('T')[0] : undefined}
+              max={tripEndDate ? new Date(tripEndDate).toISOString().split('T')[0] : undefined}
             />
             <Input
               label="Check-out *"
@@ -135,6 +158,7 @@ export default function LodgingTab({
               value={formData.checkOut}
               onChange={(e) => setFormData({ ...formData, checkOut: e.target.value })}
               min={formData.checkIn}
+              max={tripEndDate ? new Date(tripEndDate).toISOString().split('T')[0] : undefined}
             />
             <CurrencyInput
               label="Price *"

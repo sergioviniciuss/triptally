@@ -110,7 +110,7 @@ The test suite ensures that:
 
 ### 6. LodgingTab Component Tests (`features/lodging/LodgingTab.test.tsx`)
 
-**Purpose:** Ensures date field constraints work correctly for check-in/check-out dates.
+**Purpose:** Ensures date field constraints work correctly for check-in/check-out dates and defaults to trip dates.
 
 **Key Test Cases:**
 - ✅ **Date fields render**: Both check-in and check-out date fields are present
@@ -118,9 +118,16 @@ The test suite ensures that:
 - ✅ **Min equals check-in**: Check-out date min attribute equals check-in date value
 - ✅ **Min updates dynamically**: Check-out date min updates when check-in date changes
 - ✅ **Min clears**: Check-out date min attribute clears when check-in is cleared
+- ✅ **Default to trip start**: Check-in defaults to trip start date
+- ✅ **Default to trip end**: Check-out defaults to trip end date
+- ✅ **Empty when no dates**: Both dates empty when no trip dates set
+- ✅ **Check-in constraints**: Check-in constrained to trip date range
+- ✅ **Check-out constraints**: Check-out constrained to trip date range
 
 **Bug Prevention:**
 - Prevents users from selecting check-out dates before check-in dates
+- Defaults to trip dates instead of current date
+- Prevents lodging dates from being outside trip date range
 - Improves UX by constraining date picker to valid ranges
 
 ---
@@ -139,6 +146,28 @@ The test suite ensures that:
 **Bug Prevention:**
 - Prevents users from selecting end dates before start dates
 - Improves UX by constraining date picker to valid ranges
+
+---
+
+### 8. Itinerary Tab Component Tests (`features/itinerary/ItineraryTab.test.tsx`)
+
+**Purpose:** Ensures itinerary date field defaults to trip start date and respects trip date range.
+
+**Key Test Cases:**
+- ✅ **Default to trip start**: Date defaults to trip start date for first itinerary day
+- ✅ **Empty when no dates**: Date is empty when no trip dates are set
+- ✅ **Calculate next day**: Date defaults to next day when adding subsequent days
+- ✅ **Min constraint**: Date field has min attribute set to trip start date
+- ✅ **Max constraint**: Date field has max attribute set to trip end date
+- ✅ **No constraints when not set**: No min/max when trip dates are not set
+- ✅ **Min only**: Only min is set when only start date exists
+- ✅ **Field renders**: Date field renders correctly
+
+**Bug Prevention:**
+- Prevents itinerary dates from being outside trip date range
+- Defaults to trip start date instead of current date
+- Improves UX by auto-calculating next day dates
+- Constrains date picker to valid trip dates
 
 ---
 
@@ -172,10 +201,11 @@ yarn test:watch
 | Flights UI | `features/flights/FlightsTab.test.tsx` | 5 | ✅ Passing |
 | Transport | `features/transport/actions.test.ts` | 8 | ✅ Passing |
 | Lodging Actions | `features/lodging/actions.test.ts` | 6 | ✅ Passing |
-| Lodging UI | `features/lodging/LodgingTab.test.tsx` | 5 | ✅ Passing |
+| Lodging UI | `features/lodging/LodgingTab.test.tsx` | 10 | ✅ Passing |
+| Itinerary UI | `features/itinerary/ItineraryTab.test.tsx` | 8 | ✅ Passing |
 | Trip Form | `app/trips/new/page.test.tsx` | 5 | ✅ Passing |
 | Totals | `lib/totals.test.ts` | 7 | ✅ Passing |
-| **Total** | **7 files** | **45** | ✅ **All Passing** |
+| **Total** | **8 files** | **58** | ✅ **All Passing** |
 
 ---
 

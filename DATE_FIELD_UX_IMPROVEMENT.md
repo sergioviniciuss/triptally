@@ -2,7 +2,14 @@
 
 ## Summary
 
-Implemented automatic date range constraints across all date picker fields in TripTally to improve user experience and prevent invalid date selections.
+Implemented automatic date range constraints and smart defaults across all date picker fields in TripTally to improve user experience and prevent invalid date selections.
+
+### Updates (February 6, 2026)
+- ✅ Added itinerary date field smart defaults (defaults to trip start date)
+- ✅ Added itinerary date field constraints (min/max based on trip dates)
+- ✅ Auto-calculates next day when adding subsequent itinerary items
+- ✅ Added lodging date field smart defaults (check-in → trip start, check-out → trip end)
+- ✅ Added lodging date field constraints (min/max based on trip dates)
 
 ## What Changed
 
@@ -27,13 +34,26 @@ Implemented automatic date range constraints across all date picker fields in Tr
    - Added `min={formData.departDate}` to Return date field
    - Constrains return date to be on or after departure date
 
-2. **`features/lodging/LodgingTab.tsx`**
-   - Added `min={formData.checkIn}` to Check-out date field
-   - Constrains check-out date to be on or after check-in date
+2. **`features/lodging/LodgingTab.tsx`** ⭐ UPDATED
+   - Added `tripStartDate` and `tripEndDate` props
+   - Defaults check-in to trip start date
+   - Defaults check-out to trip end date
+   - Added `min`/`max` constraints based on trip dates
+   - Check-out date also constrained by check-in date (dynamic min)
 
 3. **`app/trips/new/page.tsx`**
    - Added `min={formData.dateRangeStart}` to End Date field
    - Constrains end date to be on or after start date
+
+4. **`features/itinerary/ItineraryTab.tsx`** ⭐ NEW
+   - Added `tripStartDate` and `tripEndDate` props
+   - Defaults date field to trip start date for first day
+   - Auto-calculates next day date for subsequent days
+   - Added `min`/`max` constraints based on trip dates
+
+5. **`app/trips/[tripId]/page.tsx`** ⭐ UPDATED
+   - Passes `tripStartDate` and `tripEndDate` to ItineraryTab
+   - Passes `tripStartDate` and `tripEndDate` to LodgingTab
 
 ### Technical Approach
 
@@ -61,20 +81,38 @@ Added `min` attributes to all return/end date fields. All 15 tests now pass.
 
 ### Phase 3: Verify - Run Full Test Suite
 
-All 80 tests passing (65 original + 15 new):
+All 93 tests passing (65 original + 15 date constraints + 8 itinerary + 5 lodging):
 ```
-Test Suites: 10 passed, 10 total
-Tests:       80 passed, 80 total
+Test Suites: 11 passed, 11 total
+Tests:       93 passed, 93 total
 ```
 
 ## Test Coverage
 
+### Date Constraint Tests (15 tests)
 Each test file verifies:
 - ✅ Date fields render correctly
 - ✅ No `min` attribute when start date is empty
 - ✅ `min` attribute equals start date when filled
 - ✅ `min` attribute updates when start date changes
 - ✅ `min` attribute clears when start date is cleared
+
+### Itinerary Date Tests (8 tests)
+- ✅ Date defaults to trip start date for first day
+- ✅ Date is empty when no trip dates are set
+- ✅ Date auto-calculates to next day for subsequent items
+- ✅ Min constraint set to trip start date
+- ✅ Max constraint set to trip end date
+- ✅ No constraints when trip dates not set
+- ✅ Min only when only start date exists
+- ✅ Date field renders correctly
+
+### Lodging Date Tests (5 new tests)
+- ✅ Check-in defaults to trip start date
+- ✅ Check-out defaults to trip end date
+- ✅ Dates empty when no trip dates set
+- ✅ Check-in constrained to trip date range
+- ✅ Check-out constrained to trip date range
 
 ## Examples
 
@@ -100,6 +138,25 @@ When user selects departure date "2026-03-15", the return date picker automatica
 <Input label="Start Date (optional)" type="date" value={dateRangeStart} />
 <Input label="End Date (optional)" type="date" value={dateRangeEnd} min={dateRangeStart} />
 ```
+
+### Itinerary Dates ⭐ NEW
+```tsx
+// For first day: defaults to trip start date (e.g., "2026-03-15")
+// For subsequent days: auto-calculates next day (e.g., "2026-03-16")
+<Input 
+  label="Date" 
+  type="date" 
+  value={formData.date} 
+  min={tripStartDate}
+  max={tripEndDate}
+/>
+```
+
+When user creates a trip with dates March 15-25, 2026:
+- First itinerary day automatically defaults to March 15
+- Date picker constrains selection to March 15-25 range
+- Second day automatically suggests March 16
+- Prevents dates outside the trip range
 
 ## Benefits
 
@@ -132,4 +189,5 @@ Updated test documentation files:
 ---
 
 *Implemented: February 6, 2026*  
-*Test Coverage: 15 new tests, all passing ✅*
+*Updated: February 6, 2026 (Added itinerary & lodging date improvements)*  
+*Test Coverage: 28 new tests, all passing ✅*

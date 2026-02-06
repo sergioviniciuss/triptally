@@ -1,6 +1,6 @@
 # Test Suite Summary - Bug Prevention
 
-## ✅ All Tests Passing: 80/80
+## ✅ All Tests Passing: 93/93
 
 This test suite was created to prevent the critical bugs that occurred in the TripTally application.
 
@@ -99,12 +99,13 @@ This test suite was created to prevent the critical bugs that occurred in the Tr
 | `features/lodging/actions.test.ts` | 6 | Lodging CRUD operations |
 | `lib/totals.test.ts` | 7 | Totals calculation logic |
 
-### Component Tests (15 tests)
+### Component Tests (28 tests)
 
 | Test File | Tests | Purpose |
 |-----------|-------|---------|
 | `features/flights/FlightsTab.test.tsx` | 5 | Flight form date constraints |
-| `features/lodging/LodgingTab.test.tsx` | 5 | Lodging form date constraints |
+| `features/lodging/LodgingTab.test.tsx` | 10 | Lodging form date constraints & defaults |
+| `features/itinerary/ItineraryTab.test.tsx` | 8 | Itinerary date defaults and constraints |
 | `app/trips/new/page.test.tsx` | 5 | Trip form date constraints |
 
 ### Utility Tests (35 tests)
@@ -115,7 +116,7 @@ This test suite was created to prevent the critical bugs that occurred in the Tr
 | `lib/splits.test.ts` | 9 | Expense splitting logic |
 | `components/ui/CurrencyInput.test.tsx` | 2 | Currency input component |
 
-### Total: 80 tests, all passing ✅
+### Total: 93 tests, all passing ✅
 
 ---
 
@@ -204,7 +205,7 @@ yarn test --coverage --maxWorkers=2
 
 - ✅ **100% of critical bugs** are now covered by tests
 - ✅ **Zero regressions** expected in fixed functionality
-- ✅ **Fast execution**: All 80 tests run in under 2 seconds
+- ✅ **Fast execution**: All 93 tests run in under 2 seconds
 - ✅ **Clear documentation**: Each test has descriptive names and comments
 
 ---
@@ -217,4 +218,4 @@ For detailed information about each test, see [`TESTING.md`](./TESTING.md)
 
 *Created: February 6, 2026*  
 *Last Updated: February 6, 2026*  
-*Status: All 80 tests passing ✅*
+*Status: All 93 tests passing ✅*

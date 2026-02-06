@@ -116,7 +116,12 @@ export default function TripDetailPage({ params }: PageProps) {
         )}
 
         {activeTab === 'itinerary' && trip.type === 'ROAD' && (
-          <ItineraryTab tripId={tripId} items={trip.itineraryItems} />
+          <ItineraryTab
+            tripId={tripId}
+            items={trip.itineraryItems}
+            tripStartDate={trip.dateRangeStart}
+            tripEndDate={trip.dateRangeEnd}
+          />
         )}
 
         {activeTab === 'transport' && (
@@ -134,6 +139,8 @@ export default function TripDetailPage({ params }: PageProps) {
             stays={trip.lodgingStays}
             participants={trip.participants}
             currency={trip.currency}
+            tripStartDate={trip.dateRangeStart}
+            tripEndDate={trip.dateRangeEnd}
           />
         )}
 

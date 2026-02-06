@@ -39,6 +39,8 @@ describe('LodgingTab - Date Field Constraints', () => {
     stays: [],
     participants: [],
     currency: 'EUR',
+    tripStartDate: null,
+    tripEndDate: null,
   }
 
   beforeEach(() => {
@@ -124,5 +126,143 @@ describe('LodgingTab - Date Field Constraints', () => {
     // Clear check-in date
     fireEvent.change(checkInDateInput, { target: { value: '' } })
     expect(checkOutDateInput.getAttribute('min')).toBeFalsy()
+  })
+})
+
+describe('LodgingTab - Date Field Defaults', () => {
+  const mockRouter = {
+    push: jest.fn(),
+    refresh: jest.fn(),
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    ;(useRouter as jest.Mock).mockReturnValue(mockRouter)
+  })
+
+  it('should default check-in date to trip start date', () => {
+    const tripStartDate = new Date('2026-03-15')
+    const tripEndDate = new Date('2026-03-25')
+
+    render(
+      <LodgingTab
+        tripId="trip-123"
+        stays={[]}
+        participants={[]}
+        currency="EUR"
+        tripStartDate={tripStartDate}
+        tripEndDate={tripEndDate}
+      />
+    )
+
+    // Click "Add Lodging" button
+    const addButton = screen.getByText('Add Lodging')
+    fireEvent.click(addButton)
+
+    const checkInDateInput = screen.getByLabelText(/check-in/i) as HTMLInputElement
+
+    // Should default to trip start date
+    expect(checkInDateInput.value).toBe('2026-03-15')
+  })
+
+  it('should default check-out date to trip end date', () => {
+    const tripStartDate = new Date('2026-03-15')
+    const tripEndDate = new Date('2026-03-25')
+
+    render(
+      <LodgingTab
+        tripId="trip-123"
+        stays={[]}
+        participants={[]}
+        currency="EUR"
+        tripStartDate={tripStartDate}
+        tripEndDate={tripEndDate}
+      />
+    )
+
+    // Click "Add Lodging" button
+    const addButton = screen.getByText('Add Lodging')
+    fireEvent.click(addButton)
+
+    const checkOutDateInput = screen.getByLabelText(/check-out/i) as HTMLInputElement
+
+    // Should default to trip end date
+    expect(checkOutDateInput.value).toBe('2026-03-25')
+  })
+
+  it('should default dates to empty when no trip dates are set', () => {
+    render(
+      <LodgingTab
+        tripId="trip-123"
+        stays={[]}
+        participants={[]}
+        currency="EUR"
+        tripStartDate={null}
+        tripEndDate={null}
+      />
+    )
+
+    // Click "Add Lodging" button
+    const addButton = screen.getByText('Add Lodging')
+    fireEvent.click(addButton)
+
+    const checkInDateInput = screen.getByLabelText(/check-in/i) as HTMLInputElement
+    const checkOutDateInput = screen.getByLabelText(/check-out/i) as HTMLInputElement
+
+    // Should be empty when no trip dates
+    expect(checkInDateInput.value).toBe('')
+    expect(checkOutDateInput.value).toBe('')
+  })
+
+  it('should constrain check-in to trip date range', () => {
+    const tripStartDate = new Date('2026-03-15')
+    const tripEndDate = new Date('2026-03-25')
+
+    render(
+      <LodgingTab
+        tripId="trip-123"
+        stays={[]}
+        participants={[]}
+        currency="EUR"
+        tripStartDate={tripStartDate}
+        tripEndDate={tripEndDate}
+      />
+    )
+
+    // Click "Add Lodging" button
+    const addButton = screen.getByText('Add Lodging')
+    fireEvent.click(addButton)
+
+    const checkInDateInput = screen.getByLabelText(/check-in/i) as HTMLInputElement
+
+    // Should have min and max constraints
+    expect(checkInDateInput.getAttribute('min')).toBe('2026-03-15')
+    expect(checkInDateInput.getAttribute('max')).toBe('2026-03-25')
+  })
+
+  it('should constrain check-out to trip date range', () => {
+    const tripStartDate = new Date('2026-03-15')
+    const tripEndDate = new Date('2026-03-25')
+
+    render(
+      <LodgingTab
+        tripId="trip-123"
+        stays={[]}
+        participants={[]}
+        currency="EUR"
+        tripStartDate={tripStartDate}
+        tripEndDate={tripEndDate}
+      />
+    )
+
+    // Click "Add Lodging" button
+    const addButton = screen.getByText('Add Lodging')
+    fireEvent.click(addButton)
+
+    const checkOutDateInput = screen.getByLabelText(/check-out/i) as HTMLInputElement
+
+    // Check-out should have min from trip start and max from trip end
+    // Note: check-out also has dynamic min from check-in field
+    expect(checkOutDateInput.getAttribute('max')).toBe('2026-03-25')
   })
 })
