@@ -18,6 +18,7 @@ export async function createLodgingStay(tripId: string, data: unknown) {
     revalidatePath(`/trips/${tripId}`)
     return { success: true, data: stay }
   } catch (error) {
+    console.error('Failed to create lodging stay:', error)
     return { success: false, error: 'Failed to create lodging stay' }
   }
 }
@@ -35,6 +36,7 @@ export async function updateLodgingStay(stayId: string, data: unknown) {
     revalidatePath(`/trips/${tripId}`)
     return { success: true, data: stay }
   } catch (error) {
+    console.error('Failed to update lodging stay:', error)
     return { success: false, error: 'Failed to update lodging stay' }
   }
 }
@@ -56,6 +58,7 @@ export async function deleteLodgingStay(stayId: string) {
 
     return { success: true }
   } catch (error) {
+    console.error('Failed to delete lodging stay:', error)
     return { success: false, error: 'Failed to delete lodging stay' }
   }
 }

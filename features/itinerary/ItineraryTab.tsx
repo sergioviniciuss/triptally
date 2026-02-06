@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import EmptyState from '@/components/ui/EmptyState'
@@ -29,6 +30,7 @@ export default function ItineraryTab({
   tripId: string
   items: ItineraryItem[]
 }) {
+  const router = useRouter()
   const [items, setItems] = useState(initialItems)
   const [isAdding, setIsAdding] = useState(false)
   const [formData, setFormData] = useState({
@@ -71,6 +73,7 @@ export default function ItineraryTab({
         link: '',
       })
       setIsAdding(false)
+      router.refresh()
     } else {
       toast.error(result.error || 'Failed to add day')
     }

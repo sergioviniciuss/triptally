@@ -3,10 +3,14 @@
 import { prisma } from '@/lib/prisma'
 import { tripSchema, participantSchema } from '@/lib/schema'
 import { revalidatePath } from 'next/cache'
+import { requireAuth } from '@/lib/auth-utils'
 
 export async function listTrips() {
   try {
+    const { userId } = await requireAuth()
+    
     const trips = await prisma.trip.findMany({
+      where: { userId },
       orderBy: { createdAt: 'desc' },
       include: {
         flightOptions: { where: { isSelected: true } },
@@ -23,8 +27,13 @@ export async function listTrips() {
 
 export async function getTrip(tripId: string) {
   try {
-    const trip = await prisma.trip.findUnique({
-      where: { id: tripId },
+    const { userId } = await requireAuth()
+    
+    const trip = await prisma.trip.findFirst({
+      where: { 
+        id: tripId,
+        userId,
+      },
       include: {
         participants: true,
         flightOptions: { orderBy: { departDate: 'asc' } },
@@ -46,10 +55,14 @@ export async function getTrip(tripId: string) {
 
 export async function createTrip(data: unknown) {
   try {
+    const { userId } = await requireAuth()
     const validated = tripSchema.parse(data)
 
     const trip = await prisma.trip.create({
-      data: validated,
+      data: {
+        ...validated,
+        userId,
+      },
     })
 
     revalidatePath('/trips')
@@ -65,7 +78,17 @@ export async function createTrip(data: unknown) {
 
 export async function updateTrip(tripId: string, data: unknown) {
   try {
+    const { userId } = await requireAuth()
     const validated = tripSchema.partial().parse(data)
+
+    // Verify the trip belongs to the user
+    const existingTrip = await prisma.trip.findFirst({
+      where: { id: tripId, userId },
+    })
+
+    if (!existingTrip) {
+      return { success: false, error: 'Trip not found' }
+    }
 
     const trip = await prisma.trip.update({
       where: { id: tripId },
@@ -82,6 +105,17 @@ export async function updateTrip(tripId: string, data: unknown) {
 
 export async function deleteTrip(tripId: string) {
   try {
+    const { userId } = await requireAuth()
+
+    // Verify the trip belongs to the user
+    const existingTrip = await prisma.trip.findFirst({
+      where: { id: tripId, userId },
+    })
+
+    if (!existingTrip) {
+      return { success: false, error: 'Trip not found' }
+    }
+
     await prisma.trip.delete({
       where: { id: tripId },
     })
@@ -95,8 +129,10 @@ export async function deleteTrip(tripId: string) {
 
 export async function duplicateTrip(tripId: string, clearValues: boolean = false) {
   try {
-    const originalTrip = await prisma.trip.findUnique({
-      where: { id: tripId },
+    const { userId } = await requireAuth()
+    
+    const originalTrip = await prisma.trip.findFirst({
+      where: { id: tripId, userId },
       include: {
         participants: true,
         flightOptions: true,
@@ -112,6 +148,7 @@ export async function duplicateTrip(tripId: string, clearValues: boolean = false
 
     const newTrip = await prisma.trip.create({
       data: {
+        userId,
         name: `${originalTrip.name} (copy)`,
         destination: originalTrip.destination,
         year: originalTrip.year,

@@ -62,6 +62,7 @@ export default function LodgingTab({
       setStays([...stays, result.data])
       setFormData({ city: '', hotelName: '', link: '', checkIn: '', checkOut: '', amount: '', notes: '' })
       setIsAdding(false)
+      router.refresh()
     } else {
       toast.error(result.error || 'Failed to add lodging')
     }

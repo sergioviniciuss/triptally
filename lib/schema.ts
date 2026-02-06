@@ -20,29 +20,29 @@ export const flightOptionSchema = z.object({
   departDate: z.string().transform(val => new Date(val)),
   returnDate: z.string().transform(val => new Date(val)),
   amount: z.number().min(0),
-  comments: z.string().optional(),
-  baggageInfo: z.string().optional(),
-  perPersonNotes: z.string().optional(),
-  link: z.string().optional(),
+  comments: z.string().transform(val => val || undefined).optional(),
+  baggageInfo: z.string().transform(val => val || undefined).optional(),
+  perPersonNotes: z.string().transform(val => val || undefined).optional(),
+  link: z.string().transform(val => val || undefined).optional(),
   isSelected: z.boolean().default(false),
 })
 
 export const transportItemSchema = z.object({
   label: z.string().min(1, 'Label is required'),
   amount: z.number().min(0),
-  link: z.string().optional(),
-  notes: z.string().optional(),
+  link: z.string().transform(val => val || undefined).optional(),
+  notes: z.string().transform(val => val || undefined).optional(),
   isSelected: z.boolean().default(false),
 })
 
 export const lodgingStaySchema = z.object({
   city: z.string().min(1, 'City is required'),
   hotelName: z.string().min(1, 'Hotel name is required'),
-  link: z.string().optional(),
+  link: z.string().transform(val => val || undefined).optional(),
   checkIn: z.string().transform(val => new Date(val)),
   checkOut: z.string().transform(val => new Date(val)),
   amount: z.number().min(0),
-  notes: z.string().optional(),
+  notes: z.string().transform(val => val || undefined).optional(),
 })
 
 export const itineraryItemSchema = z.object({
@@ -53,9 +53,9 @@ export const itineraryItemSchema = z.object({
   km: z.number().int().min(0).optional(),
   durationMinutes: z.number().int().min(0).optional(),
   sleepOvernight: z.boolean().default(false),
-  comments: z.string().optional(),
-  pointsOfInterest: z.string().optional(),
-  link: z.string().optional(),
+  comments: z.string().transform(val => val || undefined).optional(),
+  pointsOfInterest: z.string().transform(val => val || undefined).optional(),
+  link: z.string().transform(val => val || undefined).optional(),
 })
 
 export const splitSchema = z.object({

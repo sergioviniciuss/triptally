@@ -76,6 +76,7 @@ export default function FlightsTab({
       setFlights([...flights, result.data])
       setFormData({ route: '', departDate: '', returnDate: '', amount: '', comments: '', link: '' })
       setIsAdding(false)
+      router.refresh()
       setTimeout(() => setSaveStatus('idle'), 2000)
     } else {
       setSaveStatus('error')

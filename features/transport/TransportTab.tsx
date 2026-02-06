@@ -60,6 +60,7 @@ export default function TransportTab({
       setItems([...items, result.data])
       setFormData({ label: '', amount: '', link: '', notes: '' })
       setIsAdding(false)
+      router.refresh()
     } else {
       toast.error(result.error || 'Failed to add item')
     }
