@@ -178,6 +178,7 @@ export default function FlightsTab({
               type="date"
               value={formData.returnDate}
               onChange={(e) => setFormData({ ...formData, returnDate: e.target.value })}
+              min={formData.departDate}
             />
             <Input
               label="Link"

@@ -91,6 +91,86 @@ The test suite ensures that:
 
 ---
 
+### 5. FlightsTab Component Tests (`features/flights/FlightsTab.test.tsx`)
+
+**Purpose:** Ensures date field constraints work correctly for departure/return dates.
+
+**Key Test Cases:**
+- ✅ **Date fields render**: Both departure and return date fields are present
+- ✅ **No min when empty**: Return date has no min attribute when departure is empty
+- ✅ **Min equals departure**: Return date min attribute equals departure date value
+- ✅ **Min updates dynamically**: Return date min updates when departure date changes
+- ✅ **Min clears**: Return date min attribute clears when departure is cleared
+
+**Bug Prevention:**
+- Prevents users from selecting return dates before departure dates
+- Improves UX by constraining date picker to valid ranges
+
+---
+
+### 6. LodgingTab Component Tests (`features/lodging/LodgingTab.test.tsx`)
+
+**Purpose:** Ensures date field constraints work correctly for check-in/check-out dates and defaults to trip dates.
+
+**Key Test Cases:**
+- ✅ **Date fields render**: Both check-in and check-out date fields are present
+- ✅ **No min when empty**: Check-out date has no min attribute when check-in is empty
+- ✅ **Min equals check-in**: Check-out date min attribute equals check-in date value
+- ✅ **Min updates dynamically**: Check-out date min updates when check-in date changes
+- ✅ **Min clears**: Check-out date min attribute clears when check-in is cleared
+- ✅ **Default to trip start**: Check-in defaults to trip start date
+- ✅ **Default to trip end**: Check-out defaults to trip end date
+- ✅ **Empty when no dates**: Both dates empty when no trip dates set
+- ✅ **Check-in constraints**: Check-in constrained to trip date range
+- ✅ **Check-out constraints**: Check-out constrained to trip date range
+
+**Bug Prevention:**
+- Prevents users from selecting check-out dates before check-in dates
+- Defaults to trip dates instead of current date
+- Prevents lodging dates from being outside trip date range
+- Improves UX by constraining date picker to valid ranges
+
+---
+
+### 7. Trip Form Component Tests (`app/trips/new/page.test.tsx`)
+
+**Purpose:** Ensures date field constraints work correctly for trip start/end dates.
+
+**Key Test Cases:**
+- ✅ **Date fields render**: Both start and end date fields are present
+- ✅ **No min when empty**: End date has no min attribute when start date is empty
+- ✅ **Min equals start**: End date min attribute equals start date value
+- ✅ **Min updates dynamically**: End date min updates when start date changes
+- ✅ **Min clears**: End date min attribute clears when start date is cleared
+
+**Bug Prevention:**
+- Prevents users from selecting end dates before start dates
+- Improves UX by constraining date picker to valid ranges
+
+---
+
+### 8. Itinerary Tab Component Tests (`features/itinerary/ItineraryTab.test.tsx`)
+
+**Purpose:** Ensures itinerary date field defaults to trip start date and respects trip date range.
+
+**Key Test Cases:**
+- ✅ **Default to trip start**: Date defaults to trip start date for first itinerary day
+- ✅ **Empty when no dates**: Date is empty when no trip dates are set
+- ✅ **Calculate next day**: Date defaults to next day when adding subsequent days
+- ✅ **Min constraint**: Date field has min attribute set to trip start date
+- ✅ **Max constraint**: Date field has max attribute set to trip end date
+- ✅ **No constraints when not set**: No min/max when trip dates are not set
+- ✅ **Min only**: Only min is set when only start date exists
+- ✅ **Field renders**: Date field renders correctly
+
+**Bug Prevention:**
+- Prevents itinerary dates from being outside trip date range
+- Defaults to trip start date instead of current date
+- Improves UX by auto-calculating next day dates
+- Constrains date picker to valid trip dates
+
+---
+
 ## Running Tests
 
 ### Run All Tests
@@ -117,11 +197,15 @@ yarn test:watch
 
 | Feature | Test File | Tests | Status |
 |---------|-----------|-------|--------|
-| Flights | `features/flights/actions.test.ts` | 9 | ✅ Passing |
+| Flights Actions | `features/flights/actions.test.ts` | 9 | ✅ Passing |
+| Flights UI | `features/flights/FlightsTab.test.tsx` | 5 | ✅ Passing |
 | Transport | `features/transport/actions.test.ts` | 8 | ✅ Passing |
-| Lodging | `features/lodging/actions.test.ts` | 6 | ✅ Passing |
+| Lodging Actions | `features/lodging/actions.test.ts` | 6 | ✅ Passing |
+| Lodging UI | `features/lodging/LodgingTab.test.tsx` | 10 | ✅ Passing |
+| Itinerary UI | `features/itinerary/ItineraryTab.test.tsx` | 8 | ✅ Passing |
+| Trip Form | `app/trips/new/page.test.tsx` | 5 | ✅ Passing |
 | Totals | `lib/totals.test.ts` | 7 | ✅ Passing |
-| **Total** | **4 files** | **30** | ✅ **All Passing** |
+| **Total** | **8 files** | **58** | ✅ **All Passing** |
 
 ---
 

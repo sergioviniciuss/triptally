@@ -26,16 +26,43 @@ interface ItineraryItem {
 export default function ItineraryTab({
   tripId,
   items: initialItems,
+  tripStartDate,
+  tripEndDate,
 }: {
   tripId: string
   items: ItineraryItem[]
+  tripStartDate?: Date | null
+  tripEndDate?: Date | null
 }) {
   const router = useRouter()
   const [items, setItems] = useState(initialItems)
   const [isAdding, setIsAdding] = useState(false)
+
+  // Helper function to calculate initial date for new itinerary item
+  const getInitialDate = () => {
+    // If there are existing items, calculate next day from last item's date
+    if (items.length > 0) {
+      const lastItem = items[items.length - 1]
+      if (lastItem.date) {
+        const lastDate = new Date(lastItem.date)
+        const nextDate = new Date(lastDate)
+        nextDate.setDate(nextDate.getDate() + 1)
+        return nextDate.toISOString().split('T')[0]
+      }
+    }
+    
+    // Otherwise, use trip start date if available
+    if (tripStartDate) {
+      return new Date(tripStartDate).toISOString().split('T')[0]
+    }
+    
+    // Default to empty
+    return ''
+  }
+
   const [formData, setFormData] = useState({
     dayIndex: items.length + 1,
-    date: '',
+    date: getInitialDate(),
     from: '',
     to: '',
     km: '',
@@ -141,6 +168,8 @@ export default function ItineraryTab({
               type="date"
               value={formData.date}
               onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+              min={tripStartDate ? new Date(tripStartDate).toISOString().split('T')[0] : undefined}
+              max={tripEndDate ? new Date(tripEndDate).toISOString().split('T')[0] : undefined}
             />
             <Input
               label="From *"
